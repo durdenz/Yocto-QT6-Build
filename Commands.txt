@@ -1,0 +1,109 @@
+
+# Build Host Packages
+sudo apt install git
+
+git --version
+git version 2.34.1
+
+tar --version
+tar (GNU tar) 1.34
+
+python3 --version
+Python 3.10.12
+
+gcc --version
+gcc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0
+
+gmake --version
+GNU Make 4.3
+
+sudo apt install gawk wget git diffstat unzip texinfo gcc build-essential chrpath socat cpio python3 python3-pip python3-pexpect xz-utils debianutils iputils-ping python3-git python3-jinja2 python3-subunit zstd liblz4-tool file locales libacl1
+
+sudo locale-gen en_US.UTF-8
+
+# Use Git to clone Poky
+git clone git://git.yoctoproject.org/poky
+
+cd poky
+
+git branch -a 
+
+## check out the scarthgap branch based on the Scarthgap release:
+git checkout -t origin/scarthgap -b my-scarthgap
+
+git pull
+
+# Building Your Image
+## Initialize the build environment
+
+cd poky
+
+source oe-init-build-env
+
+# Tip
+#
+# You can significantly speed up your build and guard against #fetcher failures by using Shared State Cache mirrors and enabling Hash Equivalence. This way, you can use pre-built artifacts rather than building them. This is relevant only when your network and the server that you use can download these artifacts faster than you would be able to build them.
+#
+# To use such mirrors, uncomment the below lines in your conf/local.conf file in the Build Directory:
+
+vi conf/local.comf
+
+# Uncomment the following lines:
+
+BB_HASHSERVE_UPSTREAM = "wss://hashserv.yoctoproject.org/ws"
+SSTATE_MIRRORS ?= "file://.* http://cdn.jsdelivr.net/yocto/sstate/all/PATH;downloadfilename=PATH"
+BB_HASHSERVE = "auto"
+BB_SIGNATURE_HANDLER = "OEEquivHash"
+
+## Start the build
+bitbake core-image-sato
+
+# Test Build in EMulator
+`$ runqemu qemux86-64`
+
+Takes a while to boot but it works!
+
+# Configure to Build For Raspberry Pi
+1. Clone Yocto Build Host 2 to Yocto Build Host RPi
+2. Boot Yocto Build Host RPi
+3. Remove previous poky Installation
+[x] `rm -rf poky`
+2. Clone Trees for RPi Build
+[x] `git clone -b dunfell git://git.yoctoproject.org/poky`
+[x] `cd ./poky`
+[x] `git clone -b dunfell git://git.openembedded.org/meta-openembedded`
+[x] `git clone git://code.qt.io/yocto/meta-qt6.git`
+[x] `git clone -b dunfell git://git.yoctoproject.org/meta-raspberrypi`
+[x] `source oe-init-build-env raspberrypi4`
+3. Check Config files
+    [x] Edit poky/raspberrypi4/conf/bblayers.conf
+        - Add lines:
+            `/home/gadiv/poky/meta-qt6 \`
+            `/home/gadiv/poky/meta-raspberrypi \`
+            `/home/gadiv/poky/meta-openembedded/meta-oe \`
+            `/home/gadiv/poky/meta-openembedded/meta-multimedia \`
+            `/home/gadiv/poky/meta-openembedded/meta-python \`
+            `/home/gadiv/poky/meta-openembedded/meta-networking \`
+    [x] Edit poky/raspberrypi4/conf/local.conf
+        - Add Line to explicitly accept BRCM driver
+            `LICENSE_FLAGS_ACCEPTED = "synaptics-killswitch"`
+        - Modify Default Machine line:
+            `MACHINE ??= "raspberrypi4"`
+            `MACHINE_FEATURES += "touchscreen"`
+        - Modify IMAGE_FSTYPES line to:
+            `IMAGE_FSTYPES = "tar.xz ext3 rpi-sdimg"`
+4. Start Build
+[ ] `cd poky`
+[ ] `bitbake core-image-sato`
+
+
+References:
+https://meta-raspberrypi.readthedocs.io/en/latest/ipcompliance.html#linux-firmware-rpidistro
+https://docs.yoctoproject.org/4.0/bsp-guide/bsp.html
+https://kickstartembedded.com/2021/12/22/yocto-part-4-building-a-basic-image-for-raspberry-pi/
+https://www.youtube.com/watch?v=MZNly2Z14mA&t=207s
+https://git.yoctoproject.org/meta-raspberrypi/
+https://docs.yoctoproject.org/current/ref-manual/terms.html#term-OpenEmbedded-Build-System
+https://www.yoctoproject.org/development/yocto-project-compatible-layers/
+https://askubuntu.com/questions/961553/cant-see-shared-folders-in-virtualbox-ubuntu-vm
+https://docs.yoctoproject.org/brief-yoctoprojectqs/index.html

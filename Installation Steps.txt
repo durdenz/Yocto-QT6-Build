@@ -1,0 +1,58 @@
+# Yocto Build Host Installation Steps
+[x] Build Virtual Machine (Yocto Build Host 2)
+    - 8192 MB RAM
+    - 2 CPUs
+    - 200 GB Drive
+    - Ubuntu 22.04
+[x] Set Display Resolution to 1280x800
+    - Use `Linux->Settings->Displays`
+[x] Set Build Host Network to Bridged Adapter
+    - Use `Virtual Box Manager-><Machine>->Settings->Network`
+    - Reboot VM to pickup network changes
+[x] Add user to sudo group
+    - Boot Linux into Recovery Mode
+    - Open Root Shell
+    - `adduser gadiv sudo`
+[x] Install Vbox Guest utils
+    - `sudo apt install virtualbox-guest-utils`
+[x] Install Virtualbox Guest X11
+    -`sudo apt-get install virtualbox-guest-x11`
+[x] Configure Shared Drive with Machine
+    - Use `Virtual Box Manager-><Machine>->Settings->Shared Drives`
+    - Restart VM to pickup changes
+[x] Configure Shared Cliboard between Host and Machine
+    - Use `Virtual Box Manager->Settings->Advanced`
+    - Restart VM to pickup changes
+    - `sudo VBoxClient --clipboard -d`
+[x] Configure ssh with RP4
+    - `ssh-keygen`
+    - `ssh gadiv@192.168.1.11`
+    - `ssh-copy-id gadiv@192.168.1.11`
+[x] Install VSCode
+    - use snap
+    - `snap install code --classic`
+[x] Check for Package Updates and Install
+    - `sudo apt-get update`
+    - `sudo apt-get install`
+[x] Shutdown Machine to pick up changes
+    - `shutdown now`
+[x] Snapshot Virtual Machine using Vbox Manager
+[x] Clone the machine for future use using Vbox Manager
+## Setup for Yocto Build 
+[x] Install git
+    - `sudo apt install git`
+    - `git --version`
+    - git version 2.34.1
+[x]  Check tar version
+    - `tar --version`
+    - tar (GNU tar) 1.34
+[x]  Check Python version
+    - `python3 --version`
+    - Python 3.10.4
+[x]  Check gcc version
+    - `gcc --version`
+    - gcc (Ubuntu 11.4.0) 11.4.0
+[x]  Check gmake version
+    - `gmake --version`
+    - GNU Make 4.3
+[ ] 
